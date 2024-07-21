@@ -1,0 +1,13 @@
+# IDE files
+.idea/
+.vscode/
+
+# Node.js files
+node_modules/
+ical/
+
+# macOS files
+automate.app
+
+# config files
+.env

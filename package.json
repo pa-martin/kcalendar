@@ -1,0 +1,9 @@
+{
+  "type": "module",
+  "dependencies": {
+    "basic-ftp": "^5.0.5",
+    "dotenv": "^16.4.5",
+    "ical": "^0.8.0",
+    "node-fetch": "^3.3.2"
+  }
+}

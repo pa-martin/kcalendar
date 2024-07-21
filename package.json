@@ -1,9 +1,24 @@
 {
-  "type": "module",
+  "name": "KCalendar",
+  "version": "1.0.0",
+  "main": "dist/main.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node dist/main.js",
+    "build": "tsc"
+  },
   "dependencies": {
+    "api": "^6.1.2",
     "basic-ftp": "^5.0.5",
     "dotenv": "^16.4.5",
-    "ical": "^0.8.0",
-    "node-fetch": "^3.3.2"
+    "fs": "^0.0.1-security",
+    "ics": "^3.7.6",
+    "ts-node": "^10.9.2",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.11",
+    "@types/uuid": "^10.0.0",
+    "typescript": "^5.5.3"
   }
 }

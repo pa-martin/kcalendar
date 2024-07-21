@@ -1,0 +1,40 @@
+import Map from './Map';
+import Stream from './Stream';
+import League from './League';
+import VideoGame from './VideoGame';
+import Score from './Score';
+import Team from './Team';
+import Player from './Player';
+
+export default class Match {
+    map_picks?: Map[];
+    league_id: number;
+    detailed_stats: boolean;
+    videogame_version?: { name: string; current: boolean; };
+    game_advantage: number;
+    status: string;
+    streams_list: Stream[];
+    serie_id: number;
+    tournament_id: number;
+    league: League;
+    forfeit: boolean;
+    id: number;
+    name: string;
+    winner_id?: number;
+    match_type: string;
+    number_of_games: number;
+    original_scheduled_at: string;
+    draw: boolean;
+    begin_at: string;
+    rescheduled: boolean;
+    scheduled_at: string;
+    videogame_title: VideoGame;
+    results: Score[];
+    videogame: VideoGame;
+    modified_at: string;
+    winner_type: string;
+    winner?: Player | Team;
+    end_at?: string;
+    slug: string;
+    opponents: { opponent: Team | Player; type: 'Team' | 'Player' }[];
+}

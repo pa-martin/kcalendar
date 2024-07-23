@@ -15,6 +15,7 @@ const FTP_PORT = process.env.FTP_PORT || '21';
 const FTP_USER = process.env.FTP_USER!;
 const FTP_PASS = process.env.FTP_PASS!;
 const FTP_PATH = process.env.FTP_PATH!;
+const TEAM_NAME = process.env.TEAM_NAME!;
 
 const BASE_URL = 'https://api.pandascore.co';
 const options = {
@@ -125,4 +126,4 @@ async function main(teamName: string): Promise<void> {
     console.log(await uploadToFTP());
 }
 
-main('Karmine');
+main(TEAM_NAME);

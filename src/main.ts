@@ -88,6 +88,7 @@ async function generateIcsFile(events: Event[]): Promise<string | Error> {
         'X-WR-TIMEZONE:UTC',
     ];
     value = value.replace('PRODID:adamgibbons/ics', calendarSettings.join('\n'));
+    await fs.ensureDir('ical');
     await fs.writeFile(FTP_PATH, value, 'utf8');
     return 'ICS file created';
 }

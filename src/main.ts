@@ -69,7 +69,6 @@ function createIcsEvent(match: Match): Event {
         title: match.status !== 'finished'
             ? `[${match.league.name}] ${match.name}`
             : `[${match.league.name}] ${match.name.replace('vs', match.results.map(r => r.score).join(' - '))}`,
-        url: match.streams_list[0]?.raw_url || '',
         location: match.streams_list[0]?.raw_url || '',
     };
 }
@@ -119,7 +118,7 @@ async function main(teamName: string): Promise<void> {
 
     const matches: Match[] = [];
     for (const team of teams) {
-        getUpcomingMatches(team).then(data => matches.push(...data));
+        await getUpcomingMatches(team).then(data => matches.push(...data));
         await getPastMatches(team, startDate, endDate).then(data => matches.push(...data));
     }
 

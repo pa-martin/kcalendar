@@ -6,6 +6,5 @@ export default class Event {
     start: number;
     end: number;
     title: string;
-    url: string;
     location: string;
 }

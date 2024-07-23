@@ -7,8 +7,5 @@ node_modules/
 ical/
 dist/
 
-# macOS files
-automate.app
-
 # config files
 .env

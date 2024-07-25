@@ -27,30 +27,31 @@ const options = {
 };
 
 async function getTeams(teamName: string): Promise<Team[]> {
-    return fetch(`${BASE_URL}/teams?search[name]=${teamName}`, options)
-    .then(response => response.json())
-    .then(data => {
-        console.log(`Found ${data.length} teams`);
-        return data;
-    })
-    .catch(err => console.error(err));
+    let teams: Team[] | null = null;
+    for (let i = 1; i <= 5; i++) {
+        teams = await fetch(`${BASE_URL}/teams?search[name]=${teamName}`, options)
+        .then(response => response.json())
+        .then(data => {
+            console.log(`Found ${data.length} teams after ${i} attempts.`);
+            return data;
+        }).catch(err => console.error((err as TypeError).message));
+        if (teams) {
+            break;
+        }
+        if (i < 5) {
+            await new Promise(resolve => setTimeout(resolve, 5000));
+        } else {
+            console.log('No teams found');
+        }
+    }
+    return teams;
 }
 
-async function getUpcomingMatches(team: Team): Promise<Match[]> {
-    return fetch(`${BASE_URL}/matches/upcoming?filter[opponent_id]=${team.id}`, options)
+async function getAllMatches(team: Team, startDate: string, endDate: string): Promise<Match[]> {
+    return fetch(`${BASE_URL}/matches?filter[opponent_id]=${team.id}&range[scheduled_at]=${startDate},${endDate}`, options)
     .then(response => response.json())
     .then(data => {
-        console.log(`Found ${data.length} upcoming matches for team ${team.slug}`);
-        return data;
-    })
-    .catch(err => console.error(err));
-}
-
-async function getPastMatches(team: Team, startDate: string, endDate: string): Promise<Match[]> {
-    return fetch(`${BASE_URL}/matches/past?filter[opponent_id]=${team.id}&range[scheduled_at]=${startDate},${endDate}`, options)
-    .then(response => response.json())
-    .then(data => {
-        console.log(`Found ${data.length} past matches for team ${team.slug}`);
+        console.log(`Found ${data.length} matches for team ${team.slug}`);
         return data;
     })
     .catch(err => console.error(err));
@@ -111,15 +112,16 @@ async function uploadToFTP(): Promise<string> {
 }
 
 async function main(teamName: string): Promise<void> {
-    const teams: Team[] = await getTeams(teamName);
+    const teams = await getTeams(teamName);
+    if (!teams) return;
+
     const currentDate = new Date();
     const startDate = `${currentDate.getFullYear()}-01-01`;
     const endDate = `${currentDate.getFullYear()}-12-31`;
 
     const matches: Match[] = [];
     for (const team of teams) {
-        await getUpcomingMatches(team).then(data => matches.push(...data));
-        await getPastMatches(team, startDate, endDate).then(data => matches.push(...data));
+        await getAllMatches(team, startDate, endDate).then(data => matches.push(...data));
     }
 
     console.log(await generateIcsFile(matches.map(createIcsEvent)));

@@ -54,7 +54,9 @@ async function getAllMatches(team: Team, startDate: string, endDate: string): Pr
         matches = await fetch(`${BASE_URL}/matches?filter[opponent_id]=${team.id}&range[scheduled_at]=${startDate},${endDate}`, options)
         .then(response => response.json())
         .then(data => {
-            console.log(`Found ${data.length} matches for team ${team.slug} after ${i} attempts.`);
+            if (data) {
+                console.log(`Found ${data.length} matches for team ${team.slug} after ${i} attempts.`);
+            }
             return data;
         }).catch(err => console.error((err as TypeError).message));
         if (matches){
@@ -63,7 +65,7 @@ async function getAllMatches(team: Team, startDate: string, endDate: string): Pr
         }else if (i < 5) {
             // sleep 5 seconds
             await new Promise(resolve => setTimeout(resolve, 5000));
-        } else if (matches) {
+        } else {
             console.log(`No matches found for team ${team.slug}`);
         }
     }
@@ -134,7 +136,8 @@ async function main(teamName: string): Promise<void> {
 
     const matches: Match[] = [];
     for (const team of teams) {
-        await getAllMatches(team, startDate, endDate).then(data => matches.push(...data));
+        const matchesTmp = await getAllMatches(team, startDate, endDate);
+        if (matchesTmp) matches.push(...matchesTmp);
     }
 
     console.log(await generateIcsFile(matches.map(createIcsEvent)));

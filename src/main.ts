@@ -35,12 +35,9 @@ async function getTeams(teamName: string): Promise<Team[]> {
             console.log(`Found ${data.length} teams after ${i} attempts.`);
             return data;
         }).catch(err => console.error((err as TypeError).message));
-        if (teams) {
-            break;
-        }
-        if (i < 5) {
+        if (!teams && i < 5) {
             await new Promise(resolve => setTimeout(resolve, 5000));
-        } else {
+        } else if (!teams) {
             console.log('No teams found');
         }
     }
@@ -48,13 +45,22 @@ async function getTeams(teamName: string): Promise<Team[]> {
 }
 
 async function getAllMatches(team: Team, startDate: string, endDate: string): Promise<Match[]> {
-    return fetch(`${BASE_URL}/matches?filter[opponent_id]=${team.id}&range[scheduled_at]=${startDate},${endDate}`, options)
-    .then(response => response.json())
-    .then(data => {
-        console.log(`Found ${data.length} matches for team ${team.slug}`);
-        return data;
-    })
-    .catch(err => console.error(err));
+    let matches: Match[] | null = null;
+    for (let i = 1; i <= 5; i++) {
+        matches = await fetch(`${BASE_URL}/matches?filter[opponent_id]=${team.id}&range[scheduled_at]=${startDate},${endDate}`, options)
+        .then(response => response.json())
+        .then(data => {
+            console.log(`Found ${data.length} matches for team ${team.slug} after ${i} attempts.`);
+            return data;
+        }).catch(err => console.error((err as TypeError).message));
+        if (!matches && i < 5) {
+            // sleep 5 seconds
+            await new Promise(resolve => setTimeout(resolve, 5000));
+        } else if (!matches) {
+            console.log(`No matches found for team ${team.slug}`);
+        }
+    }
+    return matches;
 }
 
 function createIcsEvent(match: Match): Event {

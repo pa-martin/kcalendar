@@ -9,13 +9,13 @@ import Team from './models/Team';
 
 dotenv.config();
 
-const TOKEN = process.env.PANDASCORE_TOKEN!;
-const FTP_HOST = process.env.FTP_HOST!;
+const TOKEN = process.env.PANDASCORE_TOKEN || '';
+const FTP_HOST = process.env.FTP_HOST || '';
 const FTP_PORT = process.env.FTP_PORT || '21';
-const FTP_USER = process.env.FTP_USER!;
-const FTP_PASS = process.env.FTP_PASS!;
-const FTP_PATH = process.env.FTP_PATH!;
-const TEAM_NAME = process.env.TEAM_NAME!;
+const FTP_USER = process.env.FTP_USER || '';
+const FTP_PASS = process.env.FTP_PASS || '';
+const FTP_PATH = process.env.FTP_PATH || 'karmine.ics';
+const TEAM_NAME = process.env.TEAM_NAME || 'Karmine';
 
 const BASE_URL = 'https://api.pandascore.co';
 const options = {
@@ -32,13 +32,16 @@ async function getTeams(teamName: string): Promise<Team[]> {
         teams = await fetch(`${BASE_URL}/teams?search[name]=${teamName}`, options)
         .then(response => response.json())
         .then(data => {
-            console.log(`Found ${data.length} teams after ${i} attempts.`);
+            if (data) {
+                console.log(`Found ${data.length} teams after ${i} attempts.`);
+            }
             return data;
         }).catch(err => console.error((err as TypeError).message));
-        if (teams) {
+        if (teams){
+            // On sort de la boucle si on a trouvé des équipes
             break;
-        }
-        if (i < 5) {
+        } else if (i < 5) {
+            // sleep 5 seconds
             await new Promise(resolve => setTimeout(resolve, 5000));
         } else {
             console.log('No teams found');
@@ -48,13 +51,27 @@ async function getTeams(teamName: string): Promise<Team[]> {
 }
 
 async function getAllMatches(team: Team, startDate: string, endDate: string): Promise<Match[]> {
-    return fetch(`${BASE_URL}/matches?filter[opponent_id]=${team.id}&range[scheduled_at]=${startDate},${endDate}`, options)
-    .then(response => response.json())
-    .then(data => {
-        console.log(`Found ${data.length} matches for team ${team.slug}`);
-        return data;
-    })
-    .catch(err => console.error(err));
+    let matches: Match[] | null = null;
+    for (let i = 1; i <= 5; i++) {
+        matches = await fetch(`${BASE_URL}/matches?filter[opponent_id]=${team.id}&range[scheduled_at]=${startDate},${endDate}`, options)
+        .then(response => response.json())
+        .then(data => {
+            if (data) {
+                console.log(`Found ${data.length} matches for team ${team.slug} after ${i} attempts.`);
+            }
+            return data;
+        }).catch(err => console.error((err as TypeError).message));
+        if (matches){
+            // On sort de la boucle si on a trouvé des matchs
+            break;
+        } else if (i < 5) {
+            // sleep 5 seconds
+            await new Promise(resolve => setTimeout(resolve, 5000));
+        } else {
+            console.log(`No matches found for team ${team.slug}`);
+        }
+    }
+    return matches;
 }
 
 function createIcsEvent(match: Match): Event {
@@ -121,11 +138,12 @@ async function main(teamName: string): Promise<void> {
 
     const matches: Match[] = [];
     for (const team of teams) {
-        await getAllMatches(team, startDate, endDate).then(data => matches.push(...data));
+        const matchesTmp = await getAllMatches(team, startDate, endDate);
+        if (matchesTmp) matches.push(...matchesTmp);
     }
 
     console.log(await generateIcsFile(matches.map(createIcsEvent)));
     console.log(await uploadToFTP());
 }
 
-main(TEAM_NAME);
+main(TEAM_NAME).then();

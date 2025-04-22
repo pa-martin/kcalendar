@@ -39,6 +39,7 @@ export class FTPService {
             video_game_name: match?.videogame.name ?? team.current_videogame.name,
             team_name: team.name,
             team_slug: team.slug,
+            team_acronym: team.acronym,
             opponent_name: match?.opponents
                     .find(opponent => opponent.opponent.id !== team.id)?.opponent.name
                 ?? '',

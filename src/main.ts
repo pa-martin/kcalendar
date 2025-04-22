@@ -20,12 +20,12 @@ async function generateIcsFile(teamName: string): Promise<void> {
 
 
     const matches: Match[] = [];
-    const nextMatches: NextMatch[] = [];
+    const nextMatches: Record<string, NextMatch> = {};
     for (const team of teams) {
         const matchesTmp = await apiService.getAllMatches(team);
         if (matchesTmp) matches.push(...matchesTmp);
         const nextMatchTmp = await apiService.getNextMatch(team)
-        nextMatches.push(ftpService.createNextMatch(nextMatchTmp, team));
+        nextMatches[team.slug] = ftpService.createNextMatch(nextMatchTmp, team);
     }
 
     await ftpService.generateIcsFile(matches.map(ftpService.createIcsEvent), FTP_ICAL_PATH);

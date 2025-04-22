@@ -3,6 +3,7 @@ export default class NextMatch {
     video_game_name: string;
     team_name: string;
     team_slug: string;
+    team_acronym: string;
     opponent_name: string;
     start: number;
     end: number;

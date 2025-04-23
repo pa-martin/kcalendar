@@ -73,7 +73,7 @@ export class PandaService {
     }
 
     async getNextMatch(team: Team): Promise<Match> {
-        if (this.matches[team.id].length > 0) {
+        if (this.matches[team.id]?.length > 0) {
             this.matches[team.id]
                 .sort((a, b) =>
                     Date.parse(a.scheduled_at ?? a.begin_at) - Date.parse(b.scheduled_at ?? b.begin_at)

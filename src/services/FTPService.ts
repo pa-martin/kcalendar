@@ -65,6 +65,7 @@ export class FTPService {
         const value = result.value.replace('PRODID:adamgibbons/ics', calendarSettings.join('\n'));
         this.writeFile(path, value).then(() => {
             console.log('ICS file created');
+            return value;
         }).catch(e => console.error(e) );
     }
 

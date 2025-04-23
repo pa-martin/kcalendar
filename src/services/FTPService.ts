@@ -3,10 +3,10 @@ import * as ics from "ics";
 import dotenv from "dotenv";
 import fs from "fs-extra";
 
-import Event from "../models/Event";
-import Match from "../models/Match";
-import NextMatch from "../models/NextMatch";
-import Team from "../models/Team";
+import Event from "../models/Panda/Event";
+import Match from "../models/Panda/Match";
+import NextMatch from "../models/Panda/NextMatch";
+import Team from "../models/Panda/Team";
 
 dotenv.config();
 

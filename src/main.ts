@@ -1,8 +1,8 @@
 import dotenv from 'dotenv';
 
-import Match from './models/Match';
-import NextMatch from "./models/NextMatch";
-import {ApiService} from "./services/ApiService";
+import Match from './models/Panda/Match';
+import NextMatch from "./models/Panda/NextMatch";
+import {PandaService} from "./services/api/PandaService";
 import {FTPService} from "./services/FTPService";
 
 dotenv.config();
@@ -11,20 +11,20 @@ const TEAM_NAME = process.env.TEAM_NAME || 'Karmine';
 const FTP_ICAL_PATH = process.env.FTP_ICAL_PATH || 'ical/karmine.ics';
 const FTP_JSON_PATH = process.env.FTP_JSON_PATH || 'json/karmine.json';
 
-const apiService = new ApiService();
+const pandaService = new PandaService();
 const ftpService = new FTPService();
 
 async function generateIcsFile(teamName: string): Promise<void> {
-    const teams = await apiService.getTeams(teamName);
+    const teams = await pandaService.getTeams(teamName);
     if (!teams) return;
 
 
     const matches: Match[] = [];
     const nextMatches: Record<string, NextMatch> = {};
     for (const team of teams) {
-        const matchesTmp = await apiService.getAllMatches(team);
+        const matchesTmp = await pandaService.getAllMatches(team);
         if (matchesTmp) matches.push(...matchesTmp);
-        const nextMatchTmp = await apiService.getNextMatch(team)
+        const nextMatchTmp = await pandaService.getNextMatch(team)
         nextMatches[team.slug] = ftpService.createNextMatch(nextMatchTmp, team);
     }
 

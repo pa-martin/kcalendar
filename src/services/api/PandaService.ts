@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 
-import Match from "../models/Match";
-import Team from "../models/Team";
+import Match from "../../models/Panda/Match";
+import Team from "../../models/Panda/Team";
 
 dotenv.config();
 
@@ -20,7 +20,7 @@ const currentDate = new Date();
 const startDate = `${currentDate.getFullYear()}-01-01`;
 const endDate = `${currentDate.getFullYear()}-12-31`;
 
-export class ApiService {
+export class PandaService {
     private teams: Team[] = [];
     private matches: Record<number, Match[]> = {};
 
@@ -68,6 +68,7 @@ export class ApiService {
             return this.matches[team.id];
         } else {
             await this.fetchMatches(team);
+            return this.matches[team.id];
         }
     }
 
@@ -80,6 +81,7 @@ export class ApiService {
             return this.matches[team.id].find(match => match.scheduled_at > new Date().toISOString());
         } else {
             await this.fetchMatches(team);
+            return this.matches[team.id].find(match => match.scheduled_at > new Date().toISOString());
         }
     }
 }

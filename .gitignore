@@ -5,6 +5,7 @@
 # Node.js files
 node_modules/
 ical/
+json/
 dist/
 
 # config files

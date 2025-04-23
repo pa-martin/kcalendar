@@ -63,19 +63,21 @@ export class FTPService {
             'X-WR-TIMEZONE:UTC',
         ];
         const value = result.value.replace('PRODID:adamgibbons/ics', calendarSettings.join('\n'));
-        this.writeFile(path, value).then(() => {
-            console.log('ICS file created');
-            return value;
-        }).catch(e => console.error(e) );
+        await this.writeFile(path, value);
     }
 
-    async writeFile(path: string, data: string): Promise<string> {
+    async writeFile(path: string, data: string): Promise<void> {
         await fs.ensureDir(path.split('/').slice(0, -1).join('/'));
-        await fs.writeFile(path, data, 'utf8');
-        return `${path} file created`;
+        try {
+            await fs.writeFile(path, data, 'utf8');
+            console.log(`${path} file created`);
+        } catch (err) {
+            console.error(err);
+            throw new Error(`Error writing file ${path}`);
+        }
     }
 
-    async uploadToFTP(ftpPath: string): Promise<string> {
+    async uploadToFTP(ftpPath: string): Promise<void> {
         const client = new ftp.Client();
         client.ftp.verbose = false;
         try {
@@ -86,10 +88,10 @@ export class FTPService {
                 password: FTP_PASS,
             });
             await client.uploadFrom(ftpPath, `/www/${ftpPath}`);
+            console.log(`File ${ftpPath} uploaded to FTP`);
         } catch (err) {
             console.error(err);
         }
         client.close();
-        return `${ftpPath} file uploaded to FTP`;
     }
 }

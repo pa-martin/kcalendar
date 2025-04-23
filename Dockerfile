@@ -22,8 +22,10 @@ ENV FTP_PORT=21
 ARG FTP_USER
 ARG FTP_PASS
 ENV FTP_ICAL_PATH=ical/karmine.ics
-ENV FTP_JSON_PATH=json/karmine.json
+ENV FTP_JSON_KC_PATH=json/karmine.json
+ENV FTP_JSON_POOLS_PATH=json/pools.json
 ENV TEAM_NAME=Karmine
+ENV CITY_NAME=Nantes
 
 # Compiler les fichiers TypeScript
 RUN npx tsc

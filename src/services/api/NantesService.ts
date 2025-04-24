@@ -53,9 +53,10 @@ export class NantesService {
             return startA.getTime() - startB.getTime();
         });
         const is_open = schedules.some((schedule: ScheduleEntity) => {
-            const start = new Date(`1970-01-01T${schedule.heuredebut}:00`);
-            const end = new Date(`1970-01-01T${schedule.heurefin}:00`);
-            return currentDate >= start && currentDate <= end;
+            return currentDate.getHours() >= parseInt(schedule.heuredebut.split(':')[0]) &&
+                currentDate.getHours() < parseInt(schedule.heurefin.split(':')[0]) ||
+                (currentDate.getHours() === parseInt(schedule.heurefin.split(':')[0]) &&
+                    currentDate.getMinutes() < parseInt(schedule.heurefin.split(':')[1]));
         })
 
         this.schedules[pool.idobj] = {

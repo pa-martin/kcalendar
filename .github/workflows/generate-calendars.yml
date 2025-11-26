@@ -1,0 +1,54 @@
+name: Generate ICS Calendars
+
+permissions:
+  contents: write
+
+on:
+  pull_request:
+    branches: [ "main", "dev" ]
+  schedule:
+    - cron: '0 */1 * * *'
+  workflow_dispatch:
+
+jobs:
+  generate-ics:
+    runs-on: ubuntu-latest
+    environment: kcalendar
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build TypeScript
+        run: npm run build
+
+      - name: Generate All Calendars
+        run: node dist/main.js
+        env:
+          PANDASCORE_TOKEN: ${{ secrets.PANDASCORE_TOKEN }}
+          TEAM_NAME: Karmine, Gentle Mates, Vitality, Solary
+          ICAL_PATH: karmine.ics, mates.ics, vitality.ics, solary.ics
+
+      - name: Prepare public folder for GitHub Pages
+        run: |
+          mkdir -p public/ical
+          cp karmine.ics public/ical/karmine.ics
+          cp mates.ics public/ical/mates.ics
+          cp vitality.ics public/ical/vitality.ics
+          cp solary.ics public/ical/solary.ics
+
+      - name: Deploy .ics to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: public
+          publish_branch: gh-pages

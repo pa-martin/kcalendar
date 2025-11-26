@@ -1,5 +1,5 @@
 # Utiliser une image de base avec Node.js
-FROM node:18-alpine
+FROM node:24-alpine
 
 # Définir le répertoire de travail
 WORKDIR /app
@@ -17,12 +17,7 @@ RUN npm install
 COPY . .
 
 ARG PANDASCORE_TOKEN
-ARG FTP_HOST
-ENV FTP_PORT=21
-ARG FTP_USER
-ARG FTP_PASS
-ENV FTP_ICAL_PATH=ical/karmine.ics
-ENV FTP_JSON_PATH=json/karmine.json
+ENV ICAL_PATH=ical/karmine.ics
 ENV TEAM_NAME=Karmine
 
 # Compiler les fichiers TypeScript

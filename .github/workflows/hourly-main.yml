@@ -5,6 +5,9 @@ on:
     - cron: '0 * * * *'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   generate-ics:
     runs-on: ubuntu-latest
@@ -41,4 +44,4 @@ jobs:
         with:
           name: ics-calendar
           path: ical/*.ics
-          if-no-files-found: warn
+          if-no-files-found: error

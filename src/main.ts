@@ -1,17 +1,17 @@
 import dotenv from 'dotenv';
 
 import Match from './models/Panda/Match';
-import NextMatch from "./models/Panda/NextMatch";
-import {PandaService} from "./services/api/PandaService";
-import {FTPService} from "./services/FTPService";
+import NextMatch from './models/Panda/NextMatch';
+import {PandaService} from './services/api/PandaService';
+import {FileService} from './services/FileService';
 
 dotenv.config();
 
 const TEAM_NAME = process.env.TEAM_NAME || 'Karmine';
-const FTP_ICAL_PATH = process.env.FTP_ICAL_PATH || 'ical/karmine.ics';
+const ICAL_PATH = process.env.ICAL_PATH || 'ical/karmine.ics';
 
 const pandaService = new PandaService();
-const ftpService = new FTPService();
+const fileService = new FileService();
 
 async function generateIcsFile(teamName: string): Promise<void> {
     const teams = await pandaService.getTeams(teamName);
@@ -24,14 +24,14 @@ async function generateIcsFile(teamName: string): Promise<void> {
         const matchesTmp = await pandaService.getAllMatches(team);
         if (matchesTmp) matches.push(...matchesTmp);
         const nextMatchTmp = await pandaService.getNextMatch(team)
-        nextMatches[team.slug] = ftpService.createNextMatch(nextMatchTmp, team);
+        nextMatches[team.slug] = fileService.createNextMatch(nextMatchTmp, team);
     }
 
-    await ftpService.generateIcsFile(matches.map(ftpService.createIcsEvent), FTP_ICAL_PATH);
+    await fileService.generateIcsFile(matches.map(fileService.createIcsEvent), ICAL_PATH);
 }
 
-async function main(): Promise<void> {
-    generateIcsFile(TEAM_NAME).then()
+function main(): void {
+    generateIcsFile(TEAM_NAME).then();
 }
 
-main().then();
+main();

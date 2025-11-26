@@ -1,21 +1,15 @@
-import * as ftp from "basic-ftp";
-import * as ics from "ics";
-import dotenv from "dotenv";
-import fs from "fs-extra";
+import * as ics from 'ics';
+import dotenv from 'dotenv';
+import fs from 'fs-extra';
 
-import Event from "../models/Panda/Event";
-import Match from "../models/Panda/Match";
-import NextMatch from "../models/Panda/NextMatch";
-import Team from "../models/Panda/Team";
+import Event from '../models/Panda/Event';
+import Match from '../models/Panda/Match';
+import NextMatch from '../models/Panda/NextMatch';
+import Team from '../models/Panda/Team';
 
 dotenv.config();
 
-const FTP_HOST = process.env.FTP_HOST || '';
-const FTP_PORT = process.env.FTP_PORT || '21';
-const FTP_USER = process.env.FTP_USER || '';
-const FTP_PASS = process.env.FTP_PASS || '';
-
-export class FTPService {
+export class FileService {
     createIcsEvent(match: Match): Event {
         return {
             uid: `${match.id}@pa-martin.github.io`,
@@ -26,9 +20,9 @@ export class FTPService {
             end: match.end_at
                 ? Date.parse(match.end_at)
                 : Date.parse(match.scheduled_at) + 3600000 * match.number_of_games,
-            title: match.status !== 'finished'
-                ? `[${match.league.name}] ${match.name}`
-                : `[${match.league.name}] ${match.name.replace('vs', match.results.map(r => r.score).join(' - '))}`,
+            title: match.status === 'finished'
+                ? `[${match.league.name}] ${match.name.replace('vs', match.results.map(r => r.score).join(' - '))}`
+                : `[${match.league.name}] ${match.name}`,
             location: match.streams_list[0]?.raw_url || '',
         };
     }
@@ -55,7 +49,7 @@ export class FTPService {
             return result.error;
         }
         const calendarSettings = [
-            'PRODID:pa-martin.github.io/ics',
+            'PRODID:pa-martin.github.io/kcalendar/ical/karmine.ics',
             'NAME:KCORP',
             'X-WR-CALNAME:KCORP',
             'X-WR-CALDESC:Calendar with all matches of KCorp',
@@ -66,30 +60,12 @@ export class FTPService {
         this.writeFile(path, value).then(() => {
             console.log('ICS file created');
             return value;
-        }).catch(e => console.error(e) );
+        }).catch(e => console.error(e));
     }
 
     async writeFile(path: string, data: string): Promise<string> {
         await fs.ensureDir(path.split('/').slice(0, -1).join('/'));
         await fs.writeFile(path, data, 'utf8');
         return `${path} file created`;
-    }
-
-    async uploadToFTP(ftpPath: string): Promise<string> {
-        const client = new ftp.Client();
-        client.ftp.verbose = false;
-        try {
-            await client.access({
-                host: FTP_HOST,
-                port: parseInt(FTP_PORT),
-                user: FTP_USER,
-                password: FTP_PASS,
-            });
-            await client.uploadFrom(ftpPath, `/www/${ftpPath}`);
-        } catch (err) {
-            console.error(err);
-        }
-        client.close();
-        return `${ftpPath} file uploaded to FTP`;
     }
 }

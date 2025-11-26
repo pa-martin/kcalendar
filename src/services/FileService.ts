@@ -83,7 +83,7 @@ export class FileService {
             case 1:
                 return 60 * 60 * 1000; // League of Legends - 1 hour
             case 3:
-                return 50 * 60 * 1000; // CS:GO - 50 minute
+                return 50 * 60 * 1000; // CS:GO - 50 minutes
             case 22:
                 return 10 * 60 * 1000; // Rocket League - 10 minutes
             case 23:
@@ -91,7 +91,7 @@ export class FileService {
             case 26:
                 return 50 * 60 * 1000; // Valorant - 50 minutes
             default:
-                return 10 * 60 * 1000; // Default - 1 hour
+                return 60 * 60 * 1000; // Default - 1 hour
         }
     }
 

@@ -47,7 +47,8 @@ export class FileService {
     }
 
     async writeFile(path: string, data: string): Promise<string> {
-        await fs.ensureDir(path.split('/').slice(0, -1).join('/'));
+        if (path.includes('/'))
+            await fs.ensureDir(path.split('/').slice(0, -1).join('/'));
         await fs.writeFile(path, data, 'utf8');
         return `${path} file created`;
     }

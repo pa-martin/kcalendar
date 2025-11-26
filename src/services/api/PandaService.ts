@@ -67,17 +67,4 @@ export class PandaService {
             return this.matches[team.id];
         }
     }
-
-    async getNextMatch(team: Team): Promise<Match> {
-        if (this.matches[team.id]?.length > 0) {
-            this.matches[team.id]
-                .sort((a, b) =>
-                    Date.parse(a.scheduled_at ?? a.begin_at) - Date.parse(b.scheduled_at ?? b.begin_at)
-                );
-            return this.matches[team.id].find(match => match.scheduled_at > new Date().toISOString());
-        } else {
-            await this.fetchMatches(team);
-            return this.matches[team.id].find(match => match.scheduled_at > new Date().toISOString());
-        }
-    }
 }

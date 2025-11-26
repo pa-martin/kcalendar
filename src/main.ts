@@ -1,7 +1,6 @@
 import dotenv from 'dotenv';
 
 import Match from './models/Panda/Match';
-import NextMatch from './models/Panda/NextMatch';
 import {PandaService} from './services/api/PandaService';
 import {FileService} from './services/FileService';
 
@@ -19,12 +18,8 @@ async function generateIcsFile(teamName: string): Promise<void> {
 
 
     const matches: Match[] = [];
-    const nextMatches: Record<string, NextMatch> = {};
     for (const team of teams) {
-        const matchesTmp = await pandaService.getAllMatches(team);
-        if (matchesTmp) matches.push(...matchesTmp);
-        const nextMatchTmp = await pandaService.getNextMatch(team)
-        nextMatches[team.slug] = fileService.createNextMatch(nextMatchTmp, team);
+        matches.push(...await pandaService.getAllMatches(team));
     }
 
     await fileService.generateIcsFile(matches.map(fileService.createIcsEvent), ICAL_PATH);

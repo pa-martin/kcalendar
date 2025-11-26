@@ -4,13 +4,12 @@ import fs from 'fs-extra';
 
 import Event from '../models/Panda/Event';
 import Match from '../models/Panda/Match';
-import NextMatch from '../models/Panda/NextMatch';
-import Team from '../models/Panda/Team';
+import VideoGame from "../models/Panda/VideoGame";
 
 dotenv.config();
 
 export class FileService {
-    createIcsEvent(match: Match): Event {
+    createIcsEvent = (match: Match): Event => {
         return {
             uid: `${match.id}@pa-martin.github.io`,
             sequence: 0,
@@ -19,28 +18,12 @@ export class FileService {
             start: Date.parse(match.scheduled_at ?? match.begin_at),
             end: match.end_at
                 ? Date.parse(match.end_at)
-                : Date.parse(match.scheduled_at) + 3600000 * match.number_of_games,
+                : Date.parse(match.scheduled_at) + this.getGameLength(match.videogame) * match.number_of_games,
             title: match.status === 'finished'
                 ? `[${match.league.name}] ${match.name.replace('vs', match.results.map(r => r.score).join(' - '))}`
                 : `[${match.league.name}] ${match.name}`,
             location: match.streams_list[0]?.raw_url || '',
         };
-    }
-
-    createNextMatch(match: Match, team: Team): NextMatch {
-        return {
-            league_name: match?.league.name ?? '',
-            video_game_name: match?.videogame.name ?? team.current_videogame.name,
-            team_name: team.name,
-            team_slug: team.slug,
-            team_acronym: team.acronym,
-            opponent_name: match?.opponents
-                    .find(opponent => opponent.opponent.id !== team.id)?.opponent.name
-                ?? '',
-            start: Date.parse(match?.scheduled_at ?? match?.begin_at),
-            end: Date.parse(match?.scheduled_at) + 3600000 * match?.number_of_games,
-            match_name: match?.name ?? 'No more matches',
-        }
     }
 
     async generateIcsFile(events: Event[], path: string): Promise<string | Error> {
@@ -68,4 +51,18 @@ export class FileService {
         await fs.writeFile(path, data, 'utf8');
         return `${path} file created`;
     }
+
+    private getGameLength(game: VideoGame): number {
+        switch (game?.id) {
+            case 1:
+                return 60 * 60 * 1000; // League of Legends - 1 hour
+            case 22:
+                return 10 * 60 * 1000; // Rocket League - 10 minutes
+            case 26:
+                return 50 * 60 * 1000; // Valorant - 50 minutes
+            default:
+                return 10 * 60 * 1000; // Default - 1 hour
+        }
+    }
+
 }

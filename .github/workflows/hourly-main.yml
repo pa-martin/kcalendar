@@ -1,0 +1,44 @@
+name: Hourly Main
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  generate-ics:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build TypeScript
+        run: npm run build
+
+      - name: Run main script
+        run: node dist/main.js
+        env:
+          PANDASCORE_TOKEN: ${{ secrets.PANDASCORE_TOKEN }}
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_PORT: ${{ secrets.FTP_PORT }}
+          FTP_USER: ${{ secrets.FTP_USER }}
+          FTP_PASS: ${{ secrets.FTP_PASS }}
+          FTP_ICAL_PATH: ${{ secrets.FTP_ICAL_PATH }}
+          FTP_JSON_PATH: ${{ secrets.FTP_JSON_PATH }}
+          TEAM_NAME: ${{ secrets.TEAM_NAME }}
+
+      - name: Upload ICS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ics-calendar
+          path: ical/*.ics
+          if-no-files-found: warn

@@ -1,5 +1,6 @@
 # Accéder aux calendriers
 
+[![Generate ICS Calendars](https://github.com/pa-martin/kcalendar/actions/workflows/generate-calendars.yml/badge.svg)](https://github.com/pa-martin/kcalendar/actions/workflows/generate-calendars.yml)<br>
 Karmine Corp : https://pa-martin.github.io/kcalendar/ical/karmine.ics<br>
 Gentle Mates : https://pa-martin.github.io/kcalendar/ical/mates.ics<br>
 Vitality : https://pa-martin.github.io/kcalendar/ical/vitality.ics<br>

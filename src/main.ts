@@ -20,7 +20,7 @@ const fileService = new FileService();
  */
 async function generateIcsFile(teamName: string, path: string): Promise<void> {
     const teams = await pandaHttpService.getTeams(teamName);
-    if (!teams) return;
+    if (!teams?.length) return;
 
 
     const matches: Match[] = [];
@@ -43,8 +43,8 @@ async function main(): Promise<void> {
         return;
     }
 
-    for (const name of teamNames) {
-        const i = teamNames.indexOf(name);
+    for (let i = 0; i < teamNames.length; i++) {
+        const name = teamNames[i];
         console.log(`Generating ICS for team: ${name} at path: ${pathNames[i]}`);
         await generateIcsFile(name, pathNames[i]);
     }

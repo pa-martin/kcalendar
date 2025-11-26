@@ -36,8 +36,9 @@ export class FileService {
      * Generate an ICS file from a list of events and save it to the specified path.
      * @param {Event[]} events - The list of {@link Event} objects to include in the ICS file.
      * @param {string} teamName - The name of the team for calendar metadata.
-     @param {string} path - The file path where the ICS file will be saved.
+     * @param {string} path - The file path where the ICS file will be saved.
      * @returns {Promise<string | Error>} A promise that resolves to the file path if successful, or an Error if failed.
+     * @throws Error Will throw an error if file writing fails.
      */
     async generateIcsFile(events: Event[], teamName: string, path: string): Promise<string | Error> {
         const result = ics.createEvents(events);
@@ -53,10 +54,13 @@ export class FileService {
             'X-WR-TIMEZONE:UTC',
         ];
         const value = result.value.replace('PRODID:adamgibbons/ics', calendarSettings.join('\n'));
-        this.writeFile(path, value).then(() => {
+        try {
+            await this.writeFile(path, value);
             console.log('ICS file created');
             return value;
-        }).catch(e => console.error(e));
+        } catch (e) {
+            console.error(e);
+        }
     }
 
     /**

@@ -56,8 +56,12 @@ export class FileService {
         switch (game?.id) {
             case 1:
                 return 60 * 60 * 1000; // League of Legends - 1 hour
+            case 3:
+                return 50 * 60 * 1000; // CS:GO - 50 minute
             case 22:
                 return 10 * 60 * 1000; // Rocket League - 10 minutes
+            case 23:
+                return 30 * 60 * 1000; // Call of Duty - 30 minutes
             case 26:
                 return 50 * 60 * 1000; // Valorant - 50 minutes
             default:

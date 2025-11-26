@@ -27,10 +27,16 @@ export class PandaService {
     async getTeams(teamName: string): Promise<Team[]> {
         await fetch(`${BASE_URL}/teams?search[name]=${teamName}`, options)
             .then(response => response.json())
-            .then(data => data?.error ? [] : data)
+            .then(data => {
+                if (data?.error) {
+                    console.error(data.error)
+                    return [];
+                }
+                return data
+            })
             .then(data => this.teams = data)
             .catch(err => console.error((err as TypeError).message));
-        
+
         if (this.teams?.length) {
             console.log(`Found ${this.teams.length} teams.`);
         } else {

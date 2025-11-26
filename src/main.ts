@@ -9,7 +9,6 @@ dotenv.config();
 
 const TEAM_NAME = process.env.TEAM_NAME || 'Karmine';
 const FTP_ICAL_PATH = process.env.FTP_ICAL_PATH || 'ical/karmine.ics';
-const FTP_JSON_PATH = process.env.FTP_JSON_PATH || 'json/karmine.json';
 
 const pandaService = new PandaService();
 const ftpService = new FTPService();
@@ -29,9 +28,6 @@ async function generateIcsFile(teamName: string): Promise<void> {
     }
 
     await ftpService.generateIcsFile(matches.map(ftpService.createIcsEvent), FTP_ICAL_PATH);
-    // console.log(await ftpService.uploadToFTP(FTP_ICAL_PATH));
-    // console.log(await ftpService.writeFile(FTP_JSON_PATH, JSON.stringify(nextMatches)));
-    // console.log(await ftpService.uploadToFTP(FTP_JSON_PATH));
 }
 
 async function main(): Promise<void> {

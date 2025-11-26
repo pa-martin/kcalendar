@@ -11,6 +11,7 @@ on:
 jobs:
   generate-ics:
     runs-on: ubuntu-latest
+    environment: kcalendar
 
     steps:
       - name: Checkout repository
@@ -32,7 +33,6 @@ jobs:
         run: node dist/main.js
         env:
           PANDASCORE_TOKEN: ${{ secrets.PANDASCORE_TOKEN }}
-          FTP_ICAL_PATH: ical/karmine.ics
 
       - name: Prepare public folder for GitHub Pages
         run: |

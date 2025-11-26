@@ -4,6 +4,8 @@ permissions:
   contents: write
 
 on:
+  pull_request:
+    branches: [ "main", "dev" ]
   schedule:
     - cron: '0 */1 * * *'
   workflow_dispatch:

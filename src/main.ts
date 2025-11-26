@@ -29,9 +29,9 @@ async function generateIcsFile(teamName: string): Promise<void> {
     }
 
     await ftpService.generateIcsFile(matches.map(ftpService.createIcsEvent), FTP_ICAL_PATH);
-    console.log(await ftpService.uploadToFTP(FTP_ICAL_PATH));
-    console.log(await ftpService.writeFile(FTP_JSON_PATH, JSON.stringify(nextMatches)));
-    console.log(await ftpService.uploadToFTP(FTP_JSON_PATH));
+    // console.log(await ftpService.uploadToFTP(FTP_ICAL_PATH));
+    // console.log(await ftpService.writeFile(FTP_JSON_PATH, JSON.stringify(nextMatches)));
+    // console.log(await ftpService.uploadToFTP(FTP_JSON_PATH));
 }
 
 async function main(): Promise<void> {

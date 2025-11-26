@@ -36,7 +36,7 @@ jobs:
         env:
           PANDASCORE_TOKEN: ${{ secrets.PANDASCORE_TOKEN }}
           TEAM_NAME: Karmine, Gentle Mates, Vitality, Solary
-          ICAL_PATH: ical/karmine.ics, ical/mates.ics, ical/vitality.ics, ical/solary.ics
+          ICAL_PATH: karmine.ics, mates.ics, vitality.ics, solary.ics
 
       - name: Prepare public folder for GitHub Pages
         run: |

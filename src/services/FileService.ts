@@ -1,14 +1,20 @@
 import * as ics from 'ics';
-import dotenv from 'dotenv';
 import fs from 'fs-extra';
 
 import Event from '../models/Panda/Event';
 import Match from '../models/Panda/Match';
-import VideoGame from "../models/Panda/VideoGame";
+import VideoGame from '../models/Panda/VideoGame';
 
-dotenv.config();
-
+/**
+ * A service for handling file operations, including generating ICS files from match data.
+ */
 export class FileService {
+
+    /**
+     * Create an ICS event from a Match object.
+     * @param match - The {@link Match} object to convert.
+     * @returns The ICS {@link Event} object.
+     */
     createIcsEvent = (match: Match): Event => {
         return {
             uid: `${match.id}@pa-martin.github.io`,
@@ -24,18 +30,25 @@ export class FileService {
                 : `[${match.league.name}] ${match.name}`,
             location: match.streams_list[0]?.raw_url || '',
         };
-    }
+    };
 
-    async generateIcsFile(events: Event[], path: string): Promise<string | Error> {
+    /**
+     * Generate an ICS file from a list of events and save it to the specified path.
+     * @param {Event[]} events - The list of {@link Event} objects to include in the ICS file.
+     * @param {string} teamName - The name of the team for calendar metadata.
+     @param {string} path - The file path where the ICS file will be saved.
+     * @returns {Promise<string | Error>} A promise that resolves to the file path if successful, or an Error if failed.
+     */
+    async generateIcsFile(events: Event[], teamName: string, path: string): Promise<string | Error> {
         const result = ics.createEvents(events);
         if (result.error) {
             return result.error;
         }
         const calendarSettings = [
-            'PRODID:pa-martin.github.io/kcalendar/ical/karmine.ics',
-            'NAME:KCORP',
-            'X-WR-CALNAME:KCORP',
-            'X-WR-CALDESC:Calendar with all matches of KCorp',
+            `PRODID:pa-martin.github.io/kcalendar/ical/${path}`,
+            `NAME:${teamName}`,
+            `X-WR-CALNAME:${teamName}`,
+            `X-WR-CALDESC:Calendar with all matches of ${teamName}`,
             'TIMEZONE-ID:UTC',
             'X-WR-TIMEZONE:UTC',
         ];
@@ -46,6 +59,12 @@ export class FileService {
         }).catch(e => console.error(e));
     }
 
+    /**
+     * Write data to a file at the specified path.
+     * @param {string} path - The file path where the data will be written.
+     * @param {string} data - The data to write to the file.
+     * @returns {Promise<string>} A promise that resolves to a success message when the file is created.
+     */
     async writeFile(path: string, data: string): Promise<string> {
         if (path.includes('/'))
             await fs.ensureDir(path.split('/').slice(0, -1).join('/'));
@@ -53,6 +72,12 @@ export class FileService {
         return `${path} file created`;
     }
 
+    /**
+     * Get the typical length of a game based on its video game ID.
+     * @param {VideoGame} game - The {@link VideoGame} object.
+     * @returns {number} The length of the game in milliseconds.
+     * @private
+     */
     private getGameLength(game: VideoGame): number {
         switch (game?.id) {
             case 1:

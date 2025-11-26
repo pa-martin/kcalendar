@@ -31,9 +31,14 @@ jobs:
           PANDASCORE_TOKEN: ${{ secrets.PANDASCORE_TOKEN }}
           FTP_ICAL_PATH: ical/karmine.ics
 
-      - name: Upload ICS artifact
-        uses: actions/upload-artifact@v4
+      - name: Prepare public folder for GitHub Pages
+        run: |
+          mkdir -p public/ical
+          cp ical/karmine.ics public/ical/karmine.ics
+
+      - name: Deploy .ics to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          name: karmine-ics
-          path: ical/karmine.ics
-          if-no-files-found: error
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: public
+          publish_branch: gh-pages

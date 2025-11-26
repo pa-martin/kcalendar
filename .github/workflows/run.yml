@@ -1,5 +1,8 @@
 name: Run main.ts hourly
 
+permissions:
+  contents: write
+
 on:
   schedule:
     - cron: '0 * * * *'

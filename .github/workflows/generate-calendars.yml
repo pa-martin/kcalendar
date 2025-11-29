@@ -41,7 +41,13 @@ jobs:
       - name: Prepare public folder for GitHub Pages
         run: |
           mkdir -p public/ical
-          cp *.ics public/ical/
+          
+          shopt -s nullglob
+          if ls *.ics 1> /dev/null 2>&1; then
+            cp *.ics public/ical/
+          else
+            echo "::warning::Prepare public folder for GitHub Pages failed — no file generated"
+          fi
 
       - name: Deploy .ics to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4

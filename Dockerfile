@@ -19,6 +19,7 @@ COPY . .
 ARG PANDASCORE_TOKEN
 ENV ICAL_PATH=ical/karmine.ics
 ENV TEAM_NAME=Karmine
+ENV LOG_LEVEL=info
 
 # Compiler les fichiers TypeScript
 RUN npx tsc

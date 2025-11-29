@@ -35,6 +35,7 @@ jobs:
         run: node dist/main.js
         env:
           PANDASCORE_TOKEN: ${{ secrets.PANDASCORE_TOKEN }}
+          LOG_LEVEL: ${{ vars.LOG_LEVEL }}
           TEAM_NAME: Karmine, Gentle Mates, Vitality, Solary
           ICAL_PATH: karmine.ics, mates.ics, vitality.ics, solary.ics
 
@@ -47,7 +48,7 @@ jobs:
           if (( ${#ics_files[@]} )); then
             cp "${ics_files[@]}" public/ical/
           else
-            echo "::warning::Prepare public folder for GitHub Pages failed — no file generated"
+            echo "::warning::Prepare public folder for GitHub Pages failed — no files generated"
           fi
 
       - name: Deploy .ics to GitHub Pages

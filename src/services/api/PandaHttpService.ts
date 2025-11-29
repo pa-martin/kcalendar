@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import log4js from 'log4js';
 
 import Match from '../../models/Panda/Match';
 import Team from '../../models/Panda/Team';
@@ -26,6 +27,11 @@ const endDate = `${currentDate.getFullYear()}-12-31`;
 export class PandaHttpService {
     private teams: Team[] = [];
     private matches: Record<number, Match[]> = {};
+    private readonly logger = log4js.getLogger(PandaHttpService.name);
+
+    constructor() {
+        this.logger.level = process.env.LOG_LEVEL || 'info';
+    }
 
     /**
      * Get teams by name.
@@ -34,21 +40,27 @@ export class PandaHttpService {
      */
     async getTeams(teamName: string): Promise<Team[]> {
         await fetch(`${BASE_URL}/teams?search[name]=${teamName}`, options)
-        .then(response => response.json())
+        .then(async response => {
+            this.logger.trace(await response.clone().text());
+            return response.json();
+        })
         .then(data => {
             if (data?.error) {
-                console.error(data.error);
+                this.logger.warn(data.error);
                 return [];
             }
             return data;
         })
         .then(data => this.teams = data)
-        .catch(err => console.error((err as TypeError).message));
+        .catch((err: Error) => {
+            this.logger.trace(err);
+            this.logger.warn(`[${err.name}] ${err.message}`);
+        });
 
         if (this.teams?.length) {
-            console.log(`Found ${this.teams.length} teams.`);
+            this.logger.info(`Found ${this.teams.length} teams.`);
         } else {
-            console.log('No teams found');
+            this.logger.info('No teams found');
         }
         return this.teams;
     }
@@ -61,15 +73,27 @@ export class PandaHttpService {
      */
     private async fetchMatches(team: Team): Promise<void> {
         await fetch(`${BASE_URL}/matches?filter[opponent_id]=${team.id}&range[scheduled_at]=${startDate},${endDate}`, options)
-        .then(response => response.json())
-        .then(data => data?.error ? [] : data)
+        .then(async response => {
+            this.logger.trace(await response.clone().text());
+            return response.json();
+        })
+        .then(data => {
+            if (data?.error) {
+                this.logger.warn(data.error);
+                return [];
+            }
+            return data;
+        })
         .then(data => this.matches[team.id] = data)
-        .catch(err => console.error((err as TypeError).message));
+        .catch((err: Error) => {
+            this.logger.trace(err);
+            this.logger.warn(`[${err.name}] ${err.message}`);
+        });
 
         if (this.matches[team.id]?.length) {
-            console.log(`Found ${this.matches[team.id]?.length} matches for team ${team.slug}.`);
+            this.logger.info(`Found ${this.matches[team.id]?.length} matches for team ${team.slug}.`);
         } else {
-            console.log(`No matches found for team ${team.slug}`);
+            this.logger.info(`No matches found for team ${team.slug}`);
         }
     }
 

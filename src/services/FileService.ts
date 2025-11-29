@@ -1,5 +1,6 @@
 import * as ics from 'ics';
 import fs from 'fs-extra';
+import log4js from 'log4js';
 
 import Event from '../models/Panda/Event';
 import Match from '../models/Panda/Match';
@@ -9,6 +10,12 @@ import VideoGame from '../models/Panda/VideoGame';
  * A service for handling file operations, including generating ICS files from match data.
  */
 export class FileService {
+
+    private readonly logger = log4js.getLogger(FileService.name);
+
+    constructor() {
+        this.logger.level = process.env.LOG_LEVEL || 'info';
+    }
 
     /**
      * Create an ICS event from a Match object.
@@ -43,6 +50,7 @@ export class FileService {
     async generateIcsFile(events: Event[], teamName: string, path: string): Promise<string | Error> {
         const result = ics.createEvents(events);
         if (result.error) {
+            this.logger.warn(result);
             return result.error;
         }
         const calendarSettings = [
@@ -56,10 +64,10 @@ export class FileService {
         const value = result.value.replace('PRODID:adamgibbons/ics', calendarSettings.join('\n'));
         try {
             await this.writeFile(path, value);
-            console.log('ICS file created');
+            this.logger.info('ICS file created');
             return value;
         } catch (e) {
-            console.error(e);
+            this.logger.error(e);
         }
     }
 

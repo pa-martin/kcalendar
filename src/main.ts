@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import Match from './models/Panda/Match';
 import {PandaHttpService} from './services/api/PandaHttpService';
 import {FileService} from './services/FileService';
+import log4js from 'log4js';
 
 dotenv.config();
 
@@ -11,6 +12,9 @@ const ICAL_PATH = process.env.ICAL_PATH || 'ical/karmine.ics';
 
 const pandaHttpService = new PandaHttpService();
 const fileService = new FileService();
+
+const logger = log4js.getLogger('Main');
+logger.level = process.env.LOG_LEVEL || 'info';
 
 /**
  * Generate an ICS file for a given team and save it to the specified path.
@@ -39,13 +43,13 @@ async function main(): Promise<void> {
     const pathNames = ICAL_PATH.split(',').map(path => path.trim());
 
     if (teamNames.length !== pathNames.length) {
-        console.error('The number of team names must match the number of ICS paths.');
+        logger.fatal('The number of team names must match the number of ICS paths.');
         return;
     }
 
     for (let i = 0; i < teamNames.length; i++) {
         const name = teamNames[i];
-        console.log(`Generating ICS for team: ${name} at path: ${pathNames[i]}`);
+        logger.info(`Generating ICS for team: ${name} at path: ${pathNames[i]}`);
         await generateIcsFile(name, pathNames[i]);
     }
 }

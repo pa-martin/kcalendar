@@ -41,10 +41,14 @@ jobs:
       - name: Prepare public folder for GitHub Pages
         run: |
           mkdir -p public/ical
-          cp karmine.ics public/ical/karmine.ics
-          cp mates.ics public/ical/mates.ics
-          cp vitality.ics public/ical/vitality.ics
-          cp solary.ics public/ical/solary.ics
+          
+          shopt -s nullglob
+          ics_files=(*.ics)
+          if (( ${#ics_files[@]} )); then
+            cp "${ics_files[@]}" public/ical/
+          else
+            echo "::warning::Prepare public folder for GitHub Pages failed — no file generated"
+          fi
 
       - name: Deploy .ics to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4

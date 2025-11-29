@@ -35,7 +35,7 @@ jobs:
         run: node dist/main.js
         env:
           PANDASCORE_TOKEN: ${{ secrets.PANDASCORE_TOKEN }}
-          LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
+          LOG_LEVEL: ${{ vars.LOG_LEVEL }}
           TEAM_NAME: Karmine, Gentle Mates, Vitality, Solary
           ICAL_PATH: karmine.ics, mates.ics, vitality.ics, solary.ics
 

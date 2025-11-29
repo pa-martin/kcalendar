@@ -1,6 +1,6 @@
 {
   "name": "kcalendar",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "main": "dist/main.js",
   "type": "commonjs",
   "scripts": {
@@ -9,11 +9,11 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "dotenv": "^17.2.3",
     "fs-extra": "^11.3.2",
     "ics": "^3.8.1"
   },
   "devDependencies": {
+    "dotenv": "^17.2.3",
     "@types/fs-extra": "^11.0.4",
     "eslint": "^9.39.1",
     "typescript": "^5.9.3",

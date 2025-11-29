@@ -43,8 +43,9 @@ jobs:
           mkdir -p public/ical
           
           shopt -s nullglob
-          if ls *.ics 1> /dev/null 2>&1; then
-            cp *.ics public/ical/
+          ics_files=(*.ics)
+          if (( ${#ics_files[@]} )); then
+            cp "${ics_files[@]}" public/ical/
           else
             echo "::warning::Prepare public folder for GitHub Pages failed — no file generated"
           fi

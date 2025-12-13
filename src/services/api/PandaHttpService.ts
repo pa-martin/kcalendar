@@ -41,7 +41,6 @@ export class PandaHttpService {
     async getTeams(teamName: string): Promise<Team[]> {
         await fetch(`${BASE_URL}/teams?search[name]=${teamName}`, options)
         .then(async response => {
-            this.logger.trace(await response.clone().text());
             return response.json();
         })
         .then(data => {
@@ -74,7 +73,6 @@ export class PandaHttpService {
     private async fetchMatches(team: Team): Promise<void> {
         await fetch(`${BASE_URL}/matches?filter[opponent_id]=${team.id}&range[scheduled_at]=${startDate},${endDate}`, options)
         .then(async response => {
-            this.logger.trace(await response.clone().text());
             return response.json();
         })
         .then(data => {
@@ -88,6 +86,9 @@ export class PandaHttpService {
         .catch((err: Error) => {
             this.logger.trace(err);
             this.logger.warn(`[${err.name}] ${err.message}`);
+            if (err instanceof SyntaxError) {
+                this.matches[team.id] = [];
+            }
         });
 
         if (this.matches[team.id]?.length) {

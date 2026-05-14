@@ -32,9 +32,7 @@ export class FileService {
             end: match.end_at
                 ? Date.parse(match.end_at)
                 : Date.parse(match.scheduled_at) + this.getGameLength(match.videogame) * match.number_of_games,
-            title: match.status === 'finished'
-                ? `[${match.league.name}] ${match.name.replace('vs', match.results.map(r => r.score).join(' - '))}`
-                : `[${match.league.name}] ${match.name}`,
+            title: this.generateTitle(match),
             location: match.streams_list[0]?.raw_url || '',
         };
     };
@@ -105,6 +103,46 @@ export class FileService {
             default:
                 return 60 * 60 * 1000; // Default - 1 hour
         }
+    }
+
+    /**
+     * Get a short name for the game based on its video game ID, used for calendar event titles.
+     * @param game - The {@link VideoGame} object.
+     * @returns A short string representing the game name.
+     * @private
+     */
+    private getGameNameShort(game: VideoGame): string {
+        switch (game?.id) {
+            case 1:
+                return 'LoL'; // League of Legends - 1 hour
+            case 3:
+                return 'CS:GO'; // CS:GO - 50 minutes
+            case 22:
+                return 'RL'; // Rocket League - 10 minutes
+            case 23:
+                return 'CoD'; // Call of Duty - 30 minutes
+            case 26:
+                return 'Valo'; // Valorant - 50 minutes
+            default:
+                return '??'; // Default - 1 hour
+        }
+    }
+
+    /**
+     * Generate a title for the calendar event based on the match information.
+     * The title includes the league name (or a short version for EWC with the game) and the teams playing, with scores if the match is finished.
+     * @param match - The {@link Match} object to generate the title from.
+     * @returns A string representing the title of the calendar event.
+     * @private
+     */
+    private generateTitle(match: Match): string {
+        const ligue = match.league.name === 'Esports World Cup' ?
+            `EWC - ${this.getGameNameShort(match.videogame)}` : match.league.name;
+
+        const teams = (match.status === 'finished') ?
+            match.name.replace('vs', match.results.map(r => r.score).join(' - ')) : match.name;
+
+        return `[${ligue}] ${teams}`
     }
 
 }

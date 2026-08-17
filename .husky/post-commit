@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+set -e
+
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT/frontend/card"
+
+echo "🔍 Running pre-commit hook..."
+echo "📦 Checking npm dependencies..."
+
+# Update dependencies (patch only, auto-install)
+if ! ncu -t patch -c 3d --peer -du 2>&1 | grep -q "All dependencies match the patch package versions :)"; then
+    npm i > /dev/null 2>&1 || npm i
+    echo "🔄 Mise à jour automatique des patchs, merci de commit avec les changements de package.json et package-lock.json."
+    false
+fi
+# Show available minor updates (no auto-install)
+ncu -t minor -c 7d --peer -e 2
+# Show all available updates
+ncu --peer || true
+
+echo "✨ Running linter and build..."
+npm run precommit > /dev/null 2>&1 || npm run precommit
+
+echo "✅ Pre-commit hook completed successfully!"

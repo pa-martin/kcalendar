@@ -6,7 +6,16 @@
   "scripts": {
     "start": "tsc && node dist/main.js",
     "build": "tsc",
-    "lint": "eslint ."
+    "lint": "eslint . && prettier --check .",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,ts}": [
+      "eslint --fix"
+    ],
+    "*.{ts, json}": [
+      "prettier --cache --write"
+    ]
   },
   "dependencies": {
     "fs-extra": "^11.4.0",
@@ -15,7 +24,11 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
+    "commitlint": "^21.2.2",
+    "conventional-changelog-conventionalcommits": "^10.3.0",
     "dotenv": "^17.4.2",
+    "husky": "^9.1.7",
+    "prettier": "^3.9.6",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.67.0"
   }

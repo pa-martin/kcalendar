@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+if command -v npx >/dev/null 2>&1
+then
+  echo 'Husky pre-commit hook - Format and lint staged files'
+  npx lint-staged
+fi

@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+set -e
+
+if command -v npx >/dev/null 2>&1
+then
+  echo "Husky pre-commit hook - commitlint"
+  npx --no-install commitlint --edit "$1"
+fi
